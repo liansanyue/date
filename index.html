@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>日历控件</title>
+    <style>
+        div[class]{
+            /*border: 1px solid green;*/
+        }
+
+        #showhead,.showitem{
+            width:490px;
+            margin: 0 auto;
+            display:  -webkit-flex;
+        }
+        div#showhead {
+            margin: 20px auto;
+        }
+        div.showitem{
+            margin: 15px auto;
+        }
+        #showhead .day,.showitem .day{
+            -webkit-flex:1;
+            text-align: center;
+        }
+        .showitem .day{
+            height: 50px;
+
+        }
+        div#show {
+            border: 1px solid #ccc;
+            width: 600px;
+            margin: 0 auto;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        .left{
+            float: left;
+        }
+        .right{
+            float: right;
+        }
+        #datehead:after,#datelist:after{
+            content: "";
+            display: block;
+            height: 0;
+            clear: both;
+
+        }
+        div[data-color=gray]{
+            color: #ccc;
+        }
+        .yindaynum{
+            color: #aaa;
+            font-size: 12px;
+        }
+        .radius {
+            height: 50px;
+            width: 50px;
+            box-sizing: border-box;
+            padding: 8px;
+            margin: 0 auto;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 1s ease;
+
+        }
+        .isnow{
+            /*border: 1px solid yellow;*/
+            /*border: 1px solid yellow !important;*/
+            background-color: orangered !important;
+            color: #fff;
+        }
+        .isnow .yindaynum{
+            color: #fff;
+        }
+        .daynum {
+            font-weight: 600;
+        }
+        div#showday{
+            transition: all 1s ease;
+            padding: 10px 0;
+        }
+        .cindex.radius {
+            background-color: #ccc;
+        }
+        .cindex .yindaynum{
+            color: #fff;
+        }
+        div#turnright {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            font-size: 45px;
+            cursor: pointer;
+            color: #aaa;
+            transform: translateY(-50%);
+        }
+        div#turnleft {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            font-size: 45px;
+            cursor: pointer;
+            color: #aaa;
+            transform: translateY(-50%);
+        }
+        div#datehead {
+            border-bottom: 1px solid #eee;
+            padding: 5px 15px;
+        }
+        .buttom{
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+        .buttom:hover,.minbuttom:hover{
+            color: #fff;
+            border: 1px solid orange;
+            background-color: orangered;
+
+        }
+        .Lunarinfo{
+            color: orangered;
+        }
+        li {
+            line-height: 30px;
+        }
+        li:hover{
+            color: #fff;
+            /*border: 1px solid orange;*/
+            background-color: orangered;
+        }
+        ul, li {
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        /*div#selyear {*/
+            /*height: 30px;*/
+            /*overflow: hidden;*/
+            /*border: 1px solid #ccc;*/
+            /*border-radius: 3px;*/
+
+        /*}*/
+        div#selyear,div#selmonth {
+            height: 30px;
+            width: 90px;
+            /* overflow: hidden; */
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            position: relative;
+            text-align: center;
+            line-height: 30px;
+            z-index: 1;
+        }
+        div.ul {
+            position: absolute;
+            top: 30px;
+            left: -1px;
+            width: 90px;
+            height: 200px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            display: none;
+        }
+        ul {
+            /* position: absolute; */
+            /* top: 30px; */
+            /* border: 1px solid #ccc; */
+            height: 200px;
+            width: 102px;
+            overflow: auto;
+            text-align: center;
+            /* z-index: 10000; */
+            background: #fff;
+        }
+        ul, li {
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+            /* display: none; */
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+        li {
+            line-height: 25px;
+        }
+        .minbuttom{
+            float: right;
+            border: 1px solid #ccc;
+            padding: 0 5px;
+            cursor: pointer;
+            height: 28px;
+            transition: all 0.5s ease;
+        }
+        div#selyear,div#selmonth{
+            display: inline-block;
+            margin-right: 30px;
+        }
+        .day{
+            position: relative;
+        }
+        .info {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: orangered;
+        }
+        @keyframes clickanimation {
+
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script type="text/javascript" src="build/react.js"></script>
+<script type="text/javascript" src="build/react-dom.js"></script>
+<script type="text/javascript" src="build/browser.min.js"></script>
+<script src="js/jquery-1.11.3.js"></script>
+<script src="js/LunarSolarConverter.js"></script>
+<script src="js/hash.js"></script>
+<script type="text/babel" src="js/datecomponent.js">
+
+</script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>日历控件</title>
+	<style>
+		div[class]{
+			/*border: 1px solid green;*/
+		}
+
+		#showhead,.showitem{
+			width:490px;
+			margin: 0 auto;
+			display:  -webkit-flex;
+		}
+		div#showhead {
+			margin: 20px auto;
+		}
+		div.showitem{
+			margin: 10px auto;
+		}
+		#showhead .day,.showitem .day{
+		 -webkit-flex:1;
+			text-align: center;
+		}
+		.showitem .day{
+			height: 50px;
+
+		}
+		div#show {
+			border: 1px solid #ccc;
+			width: 600px;
+			margin: 0 auto;
+			border-radius: 5px;
+			overflow: hidden;
+			position: relative;
+		}
+        .left{
+			float: left;
+		}
+		.right{
+			float: right;
+		}
+		#datehead:after,#datelist:after{
+			content: "";
+			display: block;
+			height: 0;
+			clear: both;
+
+		}
+		div[data-color=gray]{
+			color: #ccc;
+		}
+		.yindaynum{
+			color: #aaa;
+			font-size: 12px;
+		}
+		.radius {
+			height: 50px;
+			width: 50px;
+			box-sizing: border-box;
+			padding: 8px;
+			margin: 0 auto;
+			border-radius: 50%;
+			cursor: pointer;
+
+		}
+		.isnow{
+			/*border: 1px solid yellow;*/
+			/*border: 1px solid yellow !important;*/
+			background-color: orangered !important;
+			color: #fff;
+		}
+		.isnow .yindaynum{
+			color: #fff;
+		}
+		.daynum {
+			font-weight: 600;
+		}
+		div#showday{
+			transition: all 1s ease;
+			padding: 10px 0;
+		}
+		.cindex.radius {
+			background-color: #ccc;
+		}
+		.cindex .yindaynum{
+			color: #fff;
+		}
+		div#turnright {
+			position: absolute;
+			top: 50%;
+			right: 0;
+			font-size: 45px;
+			cursor: pointer;
+			color: #aaa;
+			transform: translateY(-50%);
+		}
+		div#turnleft {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			font-size: 45px;
+			cursor: pointer;
+			color: #aaa;
+			transform: translateY(-50%);
+		}
+		div#datehead {
+			border-bottom: 1px solid #eee;
+			padding: 5px;
+		}
+		.buttom{
+			padding: 5px 15px;
+			border: 1px solid #ccc;
+			border-radius: 3px;
+			margin: 5px;
+			cursor: pointer;
+			transition: all 0.5s ease;
+		}
+		.buttom:hover{
+			color: #fff;
+			border: 1px solid orange;
+			background-color: orangered;
+
+		}
+		.Lunarinfo{
+			color: orangered;
+		}
+	</style>
+</head>
+<body>
+<div id="container"></div>
+	 <script type="text/javascript" src="../build/react.js"></script>
+    <script type="text/javascript" src="../build/react-dom.js"></script>
+    <script type="text/javascript" src="../build/browser.min.js"></script>
+    <script src="jquery-1.11.3.js"></script>
+    <script src="LunarSolarConverter.js"></script>
+    <script type="text/babel">
+		var rotate=360;
+    var Day=React.createClass({
+    	render:function(){
+    		return (
+					<div className="day">
+    			      <div className="info">{this.props.info}</div>
+					  <div className={"radius"+(this.props.isnow? " isnow":"")}>
+					     <div className="daynum" data-color={this.props.color} data-date={this.props.day.date} data-month={this.props.day.month} data-year={this.props.day.year}>{this.props.day.date}</div>
+						 <div className="yindaynum">{this.props.yindaynum.lunarDay!=1?lunarhash[this.props.yindaynum.lunarDay]:monthhash[this.props.yindaynum.lunarMonth]}</div>
+					  </div>
+					</div>)
+    	}
+    });
+    var Showhead=React.createClass({
+    	render:function(){
+    		return (
+    			<div id="showhead">
+	          	  <div className="day">日</div>
+	          	  <div className="day">一</div>
+	          	  <div className="day">二</div>
+	          	  <div className="day">三</div>
+	          	  <div className="day">四</div>
+	          	  <div className="day">五</div>
+	          	  <div className="day">六</div>
+          	   </div>
+    			)
+    	}
+    })
+    var Showday=React.createClass({
+		componentWillUpdate:function(){
+			$("div#showday").css("transform","translateX(-1000px)");
+			rotate+=360;
+		},
+		componentDidUpdate:function(){
+			$("div#showday").css("transform","translateX(0px)");
+			rotate+=360;
+		},
+//		componentDidMount:function(){
+//			$('#showday').on('click','.radius',function(event){
+//				var target=$(event.target);
+//				var daynum=target.parents(".day").find(".daynum")
+//				console.log(target.parents(".day").find(".daynum").attr("data-date"))
+//			});
+//		},
+
+		clickHandle: function (event) {
+
+		},
+    	render:function(){
+			var converter = new LunarSolarConverter();
+			var solar = new Solar();
+			var lunar;
+			var nowdate=new Date();
+			var argYear=+this.props.year;
+			var argMounth=+this.props.month;
+			var argdate=+this.props.date;
+			var thisdate=new Date(argYear,argMounth,1);
+//			thisdate.setFullYear(argYear);
+//			thisdate.setDate(1);
+//			thisdate.setMonth(argMounth);
+			thisdate.setDate(argdate);
+			var lastdate=new Date(argYear,(argMounth-1),1);
+//			lastdate.setFullYear(argYear);
+//			lastdate.setDate(1);
+//			lastdate.setMonth(argMounth-1);
+
+
+			var nextdate=new Date(argYear,(argMounth+1),1);
+//			nextdate.setFullYear(argYear);
+//			nextdate.setDate(1);
+//			nextdate.setMonth(argMounth+1);
+
+			console.log(argMounth,thisdate,lastdate,nextdate)
+			var index=0,date=new Date(argYear,argMounth,1);
+//			date.setFullYear(argYear);
+//			date.setDate(1);
+//			date.setMonth(argMounth);
+			date.setDate(index);
+			var beginday=date.getDay();
+			var html=[],data=[],t;
+			var lastMonthindex=date.getDate();
+			lastdate.setDate(lastMonthindex);
+           console.log(lastMonthindex,beginday)
+            for(var i=beginday;i>=0;i--){
+				solar.solarYear=lastdate.getFullYear();
+				solar.solarMonth=lastdate.getMonth()+1;
+				solar.solarDay=lastdate.getDate();
+
+				lunar=converter.SolarToLunar(solar);
+
+				html.unshift(<Day color="gray" day={{year:solar.solarYear,month:solar.solarMonth-1,date:solar.solarDay}} yindaynum={lunar}></Day>);
+				lastMonthindex--;
+				lastdate.setDate(lastMonthindex);
+				//console.log(index,date)
+			}
+			date=new Date(argYear,argMounth,1);
+//			date.setFullYear(argYear);
+//			date.setDate(1);
+//			date.setMonth(argMounth);
+
+
+			index=1;
+
+			var nextMonthindex=1;
+			nextdate.setDate(nextMonthindex);
+			for(var i=0;i<42-beginday-1;i++){
+        // console.log(date,date.getMonth(),argMounth)
+				if(date.getMonth()==argMounth){
+					solar.solarYear=date.getFullYear();
+					solar.solarMonth=date.getMonth()+1;
+					solar.solarDay=date.getDate();
+					lunar=converter.SolarToLunar(solar);
+
+					if(nowdate.getFullYear()==date.getFullYear()&&nowdate.getMonth()==date.getMonth()&&nowdate.getDate()==date.getDate()){
+
+						html.push(<Day day={{year:solar.solarYear,month:solar.solarMonth-1,date:solar.solarDay}}  yindaynum={lunar} isnow="1"></Day>);
+					}else{
+						html.push(<Day day={{year:solar.solarYear,month:solar.solarMonth-1,date:solar.solarDay}}  yindaynum={lunar}></Day>);
+					}
+
+					index++;
+					date.setDate(index);
+				}else{
+					solar.solarYear=nextdate.getFullYear();
+					solar.solarMonth=nextdate.getMonth()+1;
+					solar.solarDay=nextdate.getDate();
+					lunar=converter.SolarToLunar(solar);
+					html.push(<Day color="gray" day={{year:solar.solarYear,month:solar.solarMonth-1,date:solar.solarDay}}  yindaynum={lunar}></Day>);
+					nextMonthindex++;
+					nextdate.setDate(nextMonthindex)
+				}
+
+
+			}
+
+			while (html.length!=0){
+				data.push(html.splice(0,7))
+			}
+			t=data.map(function(item,index){
+				return <div className="showitem">{item}</div>
+			})
+
+          return (
+          	<div id="showday">
+          		<Showhead></Showhead>
+          		<div id="showbody" onClick={this.clickHandle}>
+					{t}
+          		</div>
+          	</div>
+
+          	)
+
+    	}
+    });
+    var Datehead=React.createClass({
+	componentDidMount: function () {
+       console.log(this.props.month)
+		$("#selyear").find("[value="+this.props.year+"]").attr("selected","true");
+		$("#selmonth").find("[value="+(this.props.month)+"]").attr("selected","true");
+		
+	},
+	componentDidUpdate:function(){
+//		$("option").removeAttr("selected");;
+		//$("#selmonth").find("[value="+this.props.month+"]").attr("selected","true");
+		console.log(this.props.year)
+		$("#selyear").find("option[value="+this.props.year+"]").attr("selected","true");
+		$("#selmonth").find("option[value="+(this.props.month)+"]").attr("selected","true");
+	},
+	getlunar:function(){
+		var converter = new LunarSolarConverter();
+		var solar = new Solar();
+		var lunar,result="";
+		solar.solarYear=this.props.year;
+		solar.solarMonth=this.props.month+1;
+		solar.solarDay=this.props.date;
+		lunar=converter.SolarToLunar(solar);
+		$(".cindex").removeClass("cindex");
+		result=getYearName(lunar.lunarYear)+monthhash[lunar.lunarMonth]+lunarhash[lunar.lunarDay];
+		return result;
+	},
+	render:function(){
+		return (<div id="datehead">
+				<div className="left">
+				<select id="selyear" onChange={this.props.changeHander}>
+				<option value ="2020">2020</option>
+				<option value ="2019">2019</option>
+				<option value="2018">2018</option>
+				<option value="2017">2017</option>
+				<option value ="2016">2016</option>
+				<option value ="2015">2015</option>
+				<option value="2014">2014</option>
+				<option value="2013">2013</option>
+				</select>年
+				<select id="selmonth" onChange={this.props.changeHander}>
+				<option value ="0">1</option>
+				<option value ="1">2</option>
+				<option value="2">3</option>
+				<option value="3">4</option>
+				<option value ="4">5</option>
+				<option value ="5">6</option>
+				<option value="6">7</option>
+				<option value="7">8</option>
+				<option value ="8">9</option>
+				<option value ="9">10</option>
+				<option value="10">11</option>
+				<option value="11">12</option>
+				</select>月
+				</div>
+				<div className="right Lunarinfo">{this.getlunar()}</div>
+				</div>)
+	}
+});
+    var Datelist=React.createClass({
+	render:function(){
+		return (<div id="datelist">
+				<div className="left"></div>
+		        <div className="right buttom" onClick={this.props.turnnowHandle}>今天</div>
+
+				</div>)
+	}
+    })
+	var Turnleft=React.createClass({
+		render:function(){
+			return(
+					<div id="turnleft" onClick={this.props.turnLorRHandle}>&lt;</div>
+			)
+		}
+	});
+	var Turnright=React.createClass({
+		render:function(){
+			return(
+					<div id="turnright"  onClick={this.props.turnLorRHandle}>&gt;</div>
+			)
+		}
+	});
+    var Main=React.createClass({
+	getInitialState:function(){
+		var date=new Date();
+
+		return {
+			year:date.getFullYear(),
+			month:date.getMonth(),
+			date:date.getDate(),
+
+		}
+	},
+	componentDidUpdate:function(){
+		console.log(this.state)
+		$("[data-date="+this.state.date+"][data-month="+(this.state.month)+"]").parents(".radius").addClass("cindex");
+	},
+	componentDidMount:function(){
+		var that=this;
+
+		$('#showday').on('click','.radius',function(event){
+			var target=$(event.target);
+			$(".cindex").removeClass("cindex");
+			var daynum=target.parents(".day").find(".daynum");
+			var year=+daynum.attr("data-year"),month=+daynum.attr("data-month"),date=+daynum.attr("data-date");
+			console.log($("[data-date="+date+"][data-month="+month+"]").parents(".radius"))
+			//$("[data-date="+date+"][data-month="+(month+1)+"]").parents(".radius").addClass("cindex");
+			//target.parents(".day").find("div[data-date="+date+"][data-month="+month+"]").parents(".radius").addClass("cindex");
+
+			that.setState({
+				year:year,
+				month:month,
+				date:date,
+
+			})
+
+		});
+	},
+	changeHander:function(){
+		var year=+$("#selyear").val(),month=+$("#selmonth").val();
+		//$("div#showday").removeAttr("style");
+
+		this.setState({
+			year:year,
+			month:month,
+			date:1,
+
+		})
+	},
+	turnnowHandle:function(){
+		var date=new Date();
+		this.setState({
+			year:date.getFullYear(),
+			month:date.getMonth(),
+			date:date.getDate(),
+
+
+		})
+	},
+	turnLorRHandle: function (event) {
+
+		var target=$(event.target);
+		console.log(target.hasClass("turnleft"));
+		if(target.attr("id")=="turnleft"){
+
+			var date=new Date(this.state.year,this.state.month,1);
+			date.setMonth(this.state.month-1);
+			this.setState({
+				year:date.getFullYear(),
+				month:date.getMonth(),
+				date:1
+
+			})
+		}else if(target.attr("id")=="turnright"){
+			var date=new Date(this.state.year,this.state.month,1);
+			date.setMonth(this.state.month+1);
+			this.setState({
+				year:date.getFullYear(),
+				month:date.getMonth(),
+				date:1,
+
+			})
+		}
+	},
+  render:function(){
+
+  	return (
+  		<div id="show">
+  		<Datehead year={this.state.year} month={this.state.month} date={this.state.date} changeHander={this.changeHander}></Datehead>
+  		<Datelist turnnowHandle={this.turnnowHandle}></Datelist>
+
+  		<Showday year={this.state.year} month={this.state.month} date={this.state.date}  ></Showday>
+	   <Turnleft  turnLorRHandle={this.turnLorRHandle}></Turnleft>
+	   <Turnright turnLorRHandle={this.turnLorRHandle}></Turnright>
+  	    </div>
+  		)
+  }
+
+});
+
+ReactDOM.render(
+    <Main />,
+    document.getElementById("container")
+	)
+        </script>
+</body>
+</html>
